@@ -1,0 +1,77 @@
+
+model {
+
+  # Alpha priors
+
+  a.gamma_alpha <- 1/2
+  b.gamma_alpha <- ngroups/2
+  phi_alpha ~ dgamma(0.01, 0.01)
+  invg_alpha ~ dgamma(a.gamma_alpha, b.gamma_alpha)
+  g_alpha <- 1/invg_alpha
+  vari_alpha <- (g_alpha / phi_alpha)
+  prec_alpha <- 1 / vari_alpha
+  
+  beta0_alpha ~ dnorm(0, 1)
+  betaX_alpha ~ dnorm(0, prec_alpha)
+
+  # Rho priors
+
+  a.gamma_rho <- 1/2
+  b.gamma_rho <- ngroups/2
+  phi_rho ~ dgamma(0.01, 0.01)
+  invg_rho ~ dgamma(a.gamma_rho, b.gamma_rho)
+  g_rho <- 1/invg_rho
+  vari_rho <- g_rho/phi_rho
+  prec_rho <- 1/vari_rho
+  
+  beta0_rho ~ dnorm(0, 1)
+  betaX_rho ~ dnorm(0, prec_rho)
+  
+  
+  # Type level priors
+  for (t in 1:ntypes) {
+  
+
+    mu_alpha_log[t] <- beta0_alpha + betaX_alpha
+    mu_rho_probit[t] <- beta0_rho + betaX_rho 
+
+    # Priors for standard deviations and precision
+    tau_alpha[t] ~ dgamma(0.01, 0.01)
+    sigma_alpha[t] <- 1 / sqrt(tau_alpha[t])  # Standard deviation for alpha
+    sigma_rho[t] ~ dunif(1, 100)  # Standard deviation for rho
+
+    # Re-parameterization of alpha
+    log(mu_alpha[t]) <- mu_alpha_log[t] # standardisation of initial belief mode-log link
+    rate_alpha[t] <- ( mu_alpha[t] + sqrt(mu_alpha[t]^2 + 4*sigma_alpha[t]^2))/
+                    (2*sigma_alpha[t]^2) 
+    shape_alpha[t] <- 1 + mu_alpha[t] * rate_alpha[t]
+    
+    # Re-parameterization of rho
+    probit(mu_rho[t]) <- mu_rho_probit[t]
+    shape1_rho[t] <- (mu_rho[t]) * sigma_rho[t]
+    shape2_rho[t] <- (1 - mu_rho[t]) * sigma_rho[t]  
+  
+  }
+  
+    # Model!
+    
+    for (t in 1:ntypes) {
+      for (g in 1:ngroups) {
+        for (s in 1:nsub) {
+      
+          # Subject-level parameters (as truncated gamma and beta)
+          alpha[s, g, t] ~ dgamma(shape_alpha[t], rate_alpha[t])T(0.001,) 
+          rho[s, g, t] ~ dbeta(shape1_rho[t], shape2_rho[t])T(0.001, 0.999)
+   
+          # Beliefs about others on first trial - gamma-poisson distribution
+          Gb[s, g, t] ~ dpois(alpha[s, g, t])
+      
+          # Contribution preference and actual contribution
+          p[s, g, t] <- (rho[s, g, t] * Gb[s, g, t])
+          c[s, g, t] ~ dpois(p[s, g, t])
+          
+      }
+    }
+  }
+}
+
