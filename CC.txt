@@ -1,96 +1,49 @@
 
+
 model {
-
-  #---------------------------------------------------------------
-  #----------------  Type-level/regression priors ----------------
-  #------- (same-class rich, same-class poor, mixed-class) -------
-  #---------------------------------------------------------------
-
-  #------------------------ alpha priors ------------------------
-  a.gamma_alpha <- 1/2
-  b.gamma_alpha <- ngroups/3
-
-  phi_alpha ~ dgamma(0.01, 0.01)
-
-  invg_alpha ~ dgamma(a.gamma_alpha, b.gamma_alpha)
-  g_alpha <- 1/invg_alpha
   
-  vari_alpha <- (g_alpha/phi_alpha) * invSigma
-  prec_alpha <- 1/vari_alpha
+  # Type level priors
+  for (t in 1:ntypes) {
   
-  beta0_alpha ~ dnorm(0, 1) 
-  betaX_alpha ~ dnorm(0, prec_alpha)
+    # Priors
+    mu_alpha[t] ~ dgamma(1, 0.01)
+    mu_rho[t] ~ dbeta(1, 1)T(0.001, 0.999) 
   
-  #------------------------ rho priors ------------------------
-
-  a.gamma_rho <- 1/2
-  b.gamma_rho <- ngroups/3
-  
-  phi_rho ~ dgamma(0.01,0.01)
-
-  invg_rho ~ dgamma(a.gamma_rho, b.gamma_rho)
-  g_rho <- 1/invg_rho
-  
-  vari_rho <- (g_rho/phi_rho) * invSigma
-  prec_rho <- 1/vari_rho
-  
-  beta0_rho ~ dnorm(0, 1)
-  betaX_rho ~ dnorm(0, prec_rho)
-  
-  #----------------  Type-level regressions ----------------
-
-  for (n in 1:ntypes) {
-  
-    mu_alpha_log[n] <- beta0_alpha + betaX_alpha * X[n] 
-
-    mu_rho_probit[n] <- beta0_rho + betaX_rho * X[n]
+    # Priors for standard deviations and precision
+    tau_alpha[t] ~ dgamma(0.01, 0.01)
+    sigma_alpha[t] <- 1 / sqrt(tau_alpha[t])  # Standard deviation for alpha
     
+    sigma_rho[t] ~ dunif(1, 100)  # Standard deviation for rho
+
+
+    rate_alpha[t] <- (mu_alpha[t]+sqrt(mu_alpha[t]^2 +4*sigma_alpha[t]^2))/(2*sigma_alpha[t]^2) 
+    shape_alpha[t] <- 1 + mu_alpha[t] * rate_alpha[t]
     
-    #--------------------- variance priors ---------------------
-
-    # standard deviation for initial belief (inverse gamma priors)
-    tau_alpha[n] ~ dgamma(0.01, 0.01)
-    sigma_alpha[n] <- 1/sqrt(tau_alpha[n]) 
-
-    # precision of rate parameters (for beta priors)
-    sigma_rho[n] ~ dunif(1, 100)
-
-    # reparameterising gamma prior for beliefs about others on first trial 
-    log(mu_alpha[n]) <- mu_alpha_log[n] # standardisation of initial belief mode-log link
-    
-    rate_alpha[n] <- ( mu_alpha[n] + sqrt( mu_alpha[n]^2 + 4*sigma_alpha[n]^2 ))/
-                    (2*sigma_alpha[n]^2) 
-    shape_alpha[n] <- 1 + mu_alpha[n] * rate_alpha[n]
-
-    #reparamaterising beta prior for slope of preference CC model
-    probit(mu_rho[n]) <- mu_rho_probit[n] # standardisation rate estimate mean-probit link
-    shape1_rho[n] <- (mu_rho[n]) * sigma_rho[n]
-    shape2_rho[n] <- (1 - mu_rho[n]) * sigma_rho[n]  
+    shape1_rho[t] <- (mu_rho[t]) * sigma_rho[t]
+    shape2_rho[t] <- (1 - mu_rho[t]) * sigma_rho[t]  
+   
 
   }
   
-  #-------------------------------------------------------------------
-  #-------------------  Individual level model -----------------------
-  #-------------------------------------------------------------------
-
-  for (g in 1:ngroups) {
-  
-    for (s in 1:groupSize) {
-
-      #--------------------- model priors --------------------- 
+    # Model!
+    
+    for (t in 1:ntypes) {
+      for (g in 1:ngroups) {
+        for (s in 1:nsub) {
       
-      alpha[s,g] ~ dgamma(shape_alpha[Type[g]], rate_alpha[Type[g]])T(0.001,)
-      rho[s,g] ~ dbeta(shape1_rho[Type[g]], shape2_rho[Type[g]])T(0.001, 0.999) 
-  
-      # Beliefs about others on first trial - gamma-poisson distribution
-      Gb[s,1,g] ~ dpois(alpha[s,g])
-
-      # Contribution preference and actual contribution
-      p[s,1,g] <- (rho[s,g] * Gb[s,1,g])
-      c[s,1,g] ~ dpois(p[s,1,g])
-        
+          # Subject-level parameters (as truncated gamma and beta)
+          alpha[s, g, t] ~ dgamma(shape_alpha[t], rate_alpha[t])T(0.001,) 
+          rho[s, g, t] ~ dbeta(shape1_rho[t], shape2_rho[t])T(0.001, 0.999)
+   
+          # Beliefs about others on first trial - gamma-poisson distribution
+          Gb[s, g, t] ~ dpois(alpha[s, g, t])
+      
+          # Contribution preference and actual contribution
+          p[s, g, t] <- (rho[s, g, t] * Gb[s, g, t])
+          c[s, g, t] ~ dpois(p[s, g, t])
+          
+      }
     }
   }
 }
-
 

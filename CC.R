@@ -1,46 +1,54 @@
 
 
-CC_simulation <- function(nsub,         # number of subjects
-                          group,        # list of types and groups
-                          alpha,        # optimism about initial contributions
-                          rho           # readiness to cooperate
-                          ){
+
+CC_simulation <- function(nsub,
+                          ngroups,
+                          ntypes,       
+                          mu_alpha,     
+                          mu_rho,   
+                          sigma_alpha,
+                          sigma_rho
+) {
   
-  # N trials
-  ntrials <- 1
+  # Initialize empty arrays for c and Gb
+  c <- array(NA, c(nsub, ngroups, ntypes))  # subject contributions 
+  Gb <- array(NA, c(nsub, ngroups, ntypes)) # belief about others' contribution
   
-  # Initialize empty arrays for..
-  c <- array(NA, c(nsub, ntrials))  # subject contributions 
-  Gb <- array(NA, c(nsub, ntrials)) # belief about others' contribution
+  
+  # Simulate data for each type
+  for (t in 1:ntypes) {
     
-  # Loop over all types (type1, type2, type3)
-  for (t in names(group)) {
+    # alpha
+    rate_alpha <- ( mu_alpha + sqrt( mu_alpha^2 + 4*sigma_alpha^2 ))/(2*sigma_alpha^2) 
+    shape_alpha <- 1 + mu_alpha * rate_alpha
     
-    # Loop over the groups within each type
-    for (g in names(group[[t]])) {
-      
-      # Get the subjects in this group
-      group_indices <- group[[t]][[g]]
-      
-      # Loop over each subject in the specific group
-      for (s in group_indices) {
+    # rho
+    shape1_rho <- (mu_rho) * sigma_rho
+    shape2_rho <- (1 - mu_rho) * sigma_rho
+    
+    # sample parameters
+    alpha <- rgamma(nsub, shape_alpha, rate_alpha)
+    rho <- cascsim::rtbeta(nsub, shape1_rho, shape2_rho, min = 0.001, max = 0.999) 
+    
+    # Simulate 
+    for (g in 1:ngroups) {
+      for (s in 1:nsub) {
         
         # Group belief (Gb) on the first trial
-        Gb[s] <- rpois(1, alpha[s])
+        Gb[s, g, t] <- rpois(1, alpha[s])
         
         # Contribution (c) on the first trial
-        p <- rho[s] * Gb[s]
-        c[s] <- rpois(1, p)
+        p <- rho[s] * Gb[s, g, t]
         
-
-        }
+        #c[s, g, t, 1] <- rpois(1, p)
+        c[s, g, t] <- rpois(1, p)
       }
     }
-  
-    
-    result <- list(c = c, Gb = Gb)
-    
-    return(result)
-    
   }
+  
+  result <- list(c = c, Gb = Gb)
+  
+  return(result)
+  
+}
 
