@@ -104,7 +104,7 @@ params <- c("diff_alpha")
 # Run jags
 samples <- jags.parallel(data, inits = NULL, params,
                          model.file = "group_comparison_no_rho.txt",
-                         n.chains = 3, n.iter = 5000, n.burnin = 1000,
+                         n.chains = 3, n.iter = 20000, n.burnin = 5000,
                          n.thin = 1, n.cluster = 4, jags.seed = 123)
 
 save(samples, file = "../jags_output/group_diff_estimation_NO_RHO.RData")

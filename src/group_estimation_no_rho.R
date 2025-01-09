@@ -140,11 +140,11 @@ ggsave("../plots/combined_posterior_plots_NO_RHO.png", plot = pl3, width = 6, he
 
 # trace plots
 png("../plots/traceplot_samples_mix_NO_RHO.png", width = 800, height = 600)
-traceplot(samples_mix, mfrow = c(3,1))
+traceplot(samples_mix, mfrow = c(2, 1))
 dev.off()
 
 png("../plots/traceplot_samples_same_NO_RHO.png", width = 800, height = 600)
-traceplot(samples_same, mfrow = c(3, 1))
+traceplot(samples_same, mfrow = c(2, 1))
 dev.off()
 
 
