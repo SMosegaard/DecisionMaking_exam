@@ -3,6 +3,9 @@
 .Rapp.history
 .git
 
+# data folder
+data
+
 # Session Data files
 .RData
 .RDataTmp

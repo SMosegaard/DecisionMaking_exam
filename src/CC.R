@@ -1,6 +1,4 @@
 
-
-
 CC_simulation <- function(nsub,
                           ngroups,
                           ntypes,       
@@ -19,7 +17,7 @@ CC_simulation <- function(nsub,
   for (t in 1:ntypes) {
     
     # alpha
-    rate_alpha <- ( mu_alpha + sqrt( mu_alpha^2 + 4*sigma_alpha^2 ))/(2*sigma_alpha^2) 
+    rate_alpha <- (mu_alpha + sqrt(mu_alpha^2 + 4*sigma_alpha^2))/(2*sigma_alpha^2) 
     shape_alpha <- 1 + mu_alpha * rate_alpha
     
     # rho
@@ -39,8 +37,6 @@ CC_simulation <- function(nsub,
         
         # Contribution (c) on the first trial
         p <- rho[s] * Gb[s, g, t]
-        
-        #c[s, g, t, 1] <- rpois(1, p)
         c[s, g, t] <- rpois(1, p)
       }
     }

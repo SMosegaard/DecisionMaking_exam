@@ -1,0 +1,85 @@
+
+model {
+
+  for (t in 1:ntypes_mix) {
+  
+    ## Priors !
+    
+    diff_alpha[t] ~ dnorm(0, 1)
+    mid_alpha[t] ~ dgamma(1, 0.2)
+    
+    
+    ######## MIX parameters! ########
+    
+    mu_alpha_mix[t] <- mid_alpha[t] + (diff_alpha[t] * -0.5)
+
+    tau_alpha_mix[t] ~ dgamma(0.01, 0.01)
+    sigma_alpha_mix[t] <- 1/sqrt(tau_alpha_mix[t]) 
+    
+    rate_alpha_mix[t] <- (mu_alpha_mix[t]+sqrt(mu_alpha_mix[t]^2 +4*sigma_alpha_mix[t]^2))/
+      (2*sigma_alpha_mix[t]^2) 
+    shape_alpha_mix[t] <- 1 + mu_alpha_mix[t] * rate_alpha_mix[t]
+    
+    
+    ######## SAME parameters! ########
+    
+    mu_alpha_same[t] <- mid_alpha[t] + (diff_alpha[t] * 0.5)
+
+    tau_alpha_same[t] ~ dgamma(0.01, 0.01)
+    sigma_alpha_same[t] <- 1/sqrt(tau_alpha_same[t]) 
+    
+    rate_alpha_same[t] <- (mu_alpha_same[t]+sqrt(mu_alpha_same[t]^2 +4*sigma_alpha_same[t]^2))/(2*sigma_alpha_same[t]^2) 
+    shape_alpha_same[t] <- 1 + mu_alpha_same[t] * rate_alpha_same[t]
+    
+  }
+  
+  ######## MIX MODEL ########
+  
+  for (t in 1:ntypes_mix) {
+    for (g in 1:ngroups_mix) {
+      for (s in 1:nsub_mix) {
+    
+        alpha_mix[s, g, t] ~ dgamma(shape_alpha_mix[t], rate_alpha_mix[t])T(0.001,) 
+        rho_mix[s, g, t] <- 1
+        
+        Gb_mix[s, g, t] ~ dpois(alpha_mix[s, g, t])
+
+        p_mix[s, g, t] <- (rho_mix[s, g, t] * Gb_mix[s, g, t])
+        c_mix[s, g, t] ~ dpois(p_mix[s, g, t])
+        
+        #p_mix[s, g, t] <- (rho_mix[s, g, t] * Gb_mix[s, g, t])
+        #c_mix[s, g, t] ~ dpois(p_mix[s, g, t])
+          
+        
+      }
+    }
+  }
+  
+  ######## SAME MODEL ########
+  
+  for (t in 1:ntypes_same) {
+    for (g in 1:ngroups_same) {
+      for (s in 1:nsub_same) {
+    
+        alpha_same[s, g, t] ~ dgamma(shape_alpha_same, rate_alpha_same)T(0.001,) 
+        rho_same[s, g, t] <- 1
+        
+        Gb_same[s, g, t] ~ dpois(alpha_same[s, g, t])
+
+        p_same[s, g, t] <- (rho_same[s, g, t] * Gb_same[s, g, t])
+        c_same[s, g, t] ~ dpois(p_same[s, g, t])
+    
+      }
+    }
+  }
+  
+}
+  
+
+  
+  
+  
+  
+  
+  
+  

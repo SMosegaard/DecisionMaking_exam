@@ -6,24 +6,16 @@ model {
   for (t in 1:ntypes) {
   
     # Priors
-    mu_alpha[t] ~ dgamma(1, 0.01)
-    mu_rho[t] ~ dbeta(1, 1)T(0.001, 0.999) 
-  
+    mu_alpha[t] ~ dgamma(1, 0.2)
+
     # Priors for standard deviations and precision
     tau_alpha[t] ~ dgamma(0.01, 0.01)
-    sigma_alpha[t] <- 1 / sqrt(tau_alpha[t])  # Standard deviation for alpha
-    
-    sigma_rho[t] ~ dunif(1, 100)  # Standard deviation for rho
-
+    sigma_alpha[t] <- 1 / sqrt(tau_alpha[t])
 
     rate_alpha[t] <- (mu_alpha[t]+sqrt(mu_alpha[t]^2 +4*sigma_alpha[t]^2))/(2*sigma_alpha[t]^2) 
     shape_alpha[t] <- 1 + mu_alpha[t] * rate_alpha[t]
-    
-    shape1_rho[t] <- (mu_rho[t]) * sigma_rho[t]
-    shape2_rho[t] <- (1 - mu_rho[t]) * sigma_rho[t]  
-   
 
-  }
+}
   
     # Model!
     
@@ -33,13 +25,13 @@ model {
       
           # Subject-level parameters (as truncated gamma and beta)
           alpha[s, g, t] ~ dgamma(shape_alpha[t], rate_alpha[t])T(0.001,) 
-          rho[s, g, t] ~ dbeta(shape1_rho[t], shape2_rho[t])T(0.001, 0.999)
+          rho[s, g, t] <- 1  # Set rho to 1
    
           # Beliefs about others on first trial - gamma-poisson distribution
           Gb[s, g, t] ~ dpois(alpha[s, g, t])
       
           # Contribution preference and actual contribution
-          p[s, g, t] <- (rho[s, g, t] * Gb[s, g, t])
+          p[s, g, t] <- (rho[s, g, t] * Gb[s, g, t]) # rho=1, so p = Gb = dpois(alpha)
           c[s, g, t] ~ dpois(p[s, g, t])
           
       }
