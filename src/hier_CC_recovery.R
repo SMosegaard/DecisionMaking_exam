@@ -4,7 +4,7 @@
 install.packages("pacman")
 pacman::p_load(R2jags, parallel, ggpubr, extraDistr, truncnorm, ggplot2, gridExtra)
 set.seed(123)
-setwd('/work/SofieNørboMosegaard#5741/DecisionMaking_exam')
+setwd('/work/SofieNørboMosegaard#5741/DecisionMaking_exam/src')
 
 
 # Define function for calculating the maximum of the posterior density 
@@ -12,7 +12,7 @@ MPD <- function(x) {density(x)$x[which(density(x)$y==max(density(x)$y))]}
 
 
 # Set parameters for the simulation
-nsub <- 36
+nsub <- 24
 group_size <- 6
 ngroups <- nsub / group_size
 ntypes <- 2

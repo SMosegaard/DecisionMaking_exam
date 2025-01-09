@@ -3,7 +3,7 @@
 install.packages("pacman")
 pacman::p_load(R2jags, haven, dplyr, parallel, ggplot2)
 set.seed(123)
-setwd('/work/SofieNørboMosegaard#5741/DecisionMaking_exam')
+setwd('/work/SofieNørboMosegaard#5741/DecisionMaking_exam/src')
 
 
 # Define function for calculating the maximum of the posterior density 

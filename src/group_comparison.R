@@ -3,7 +3,7 @@
 install.packages("pacman")
 pacman::p_load(R2jags, haven, dplyr, parallel, ggplot2)
 set.seed(123)
-setwd('/work/SofieNørboMosegaard#5741/DecisionMaking_exam')
+setwd('/work/SofieNørboMosegaard#5741/DecisionMaking_exam/src')
 
 
 # Define function for calculating the maximum of the posterior density 
@@ -107,7 +107,7 @@ samples <- jags.parallel(data, inits = NULL, params,
                          n.chains = 3, n.iter = 20000, n.burnin = 5000,
                          n.thin = 1, n.cluster = 4, jags.seed = 123)
 
-save(samples, file = "jags_output/group_diff_estimation.RData")
+save(samples, file = "../jags_output/group_diff_estimation.RData")
 
 
 # Plotting!
@@ -119,11 +119,11 @@ df <- data.frame(parameter = rep(c("alpha", "rho"),
                              as.vector(samples$BUGSoutput$sims.list$diff_rho)))
 
 pl1 <- diff_plot(df)
-ggsave("plots/post_dens_diff_means.png", plot = pl1, width = 6, height = 6, dpi = 300)
+ggsave("../plots/post_dens_diff_means.png", plot = pl1, width = 6, height = 6, dpi = 300)
 
 
 # diff_alpha, diff_rho
-png("plots/post_dens_diff_means2.png", width = 800, height = 600)
+png("../plots/post_dens_diff_means2.png", width = 800, height = 600)
 par(mfrow = c(1,2))
 plot(density(rnorm(10000, 0, 1/sqrt(1))), ylim = c(0,.7), main = "Δα")
 lines(density(samples$BUGSoutput$sims.list$diff_alpha), col = "cornflowerblue")
@@ -133,13 +133,9 @@ dev.off()
 
 
 # trace plot, diff-alpha and diff-rho
-png("plots/traceplot_group_comparison.png", width = 800, height = 600)
+png("../plots/traceplot_group_comparison.png", width = 800, height = 600)
 traceplot(samples, mfrow = c(3, 1))
 dev.off()
-
-
-
-
 
 
 

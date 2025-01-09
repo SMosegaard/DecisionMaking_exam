@@ -7,7 +7,7 @@ recovery_plots <- function(df, parameter_filter) {
     facet_wrap(~parameter, nrow = 1, scales = "free",
                labeller = labeller(parameter = c("mu_alpha" = "μα", "mu_rho" = "μρ",
                                                  "sigma_alpha" = "σα", "sigma_rho" = "σρ"))) +
-    theme_bw() +
+    theme_minimal() +
     xlab("True") +
     ylab("Recovered") +
     theme(strip.text = element_text(size = 14, face = "bold"),

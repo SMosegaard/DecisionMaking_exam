@@ -3,7 +3,7 @@
 install.packages("pacman")
 pacman::p_load(R2jags, haven, dplyr, parallel, ggplot2)
 set.seed(123)
-setwd('/work/SofieNørboMosegaard#5741/DecisionMaking_exam')
+setwd('/work/SofieNørboMosegaard#5741/DecisionMaking_exam/src')
 
 
 # Define function for calculating the maximum of the posterior density 
@@ -98,48 +98,54 @@ params <- c("mu_alpha", "mu_rho")
 # Run jags
 samples_mix <- jags.parallel(data_mix, inits = NULL, params,
                              model.file = "CC.txt",
-                             n.chains = 3, n.iter = 20000, n.burnin = 5000, # 5000, n.burnin = 1500,
+                             n.chains = 3, n.iter = 20000, n.burnin = 5000,
                              n.thin = 1, n.cluster = 4, jags.seed = 123)
-save(samples_mix, file = "jags_output/mix_estimation_samples.RData")
+save(samples_mix, file = "../jags_output/mix_estimation_samples.RData")
 
 
 samples_same <- jags.parallel(data_same, inits = NULL, params,
                              model.file = "CC.txt",
                              n.chains = 3, n.iter = 20000, n.burnin = 5000,
                              n.thin = 1, n.cluster = 4, jags.seed = 123)
-save(samples_same, file = "jags_output/same_estimation_samples.RData")
+save(samples_same, file = "../jags_output/same_estimation_samples.RData")
 
 
 # Plotting!
 # Posterior density plots for alpha and rho, both types
 source("plot_functions.R")
 
-png("plots/mix_posterior.png", width = 8, height = 6, units = "in", res = 300)
+png("../plots/mix_posterior.png", width = 8, height = 6, units = "in", res = 300)
 posterior_plots(samples_mix, "mixed-class type")
 dev.off() 
 
-png("plots/same_posterior.png", width = 8, height = 6, units = "in", res = 300)
+png("../plots/same_posterior.png", width = 8, height = 6, units = "in", res = 300)
 posterior_plots(samples_same, "same-class type")
 dev.off() 
 
+# Construct the data frame
+length_mix <- length(samples_mix$BUGSoutput$sims.list$mu_alpha)
+length_same <- length(samples_same$BUGSoutput$sims.list$mu_alpha)
+total_length <- length_mix + length_same
 
-df <- data.frame(parameter = rep(c("alpha", "rho"), each = 24000),
-                 type = rep(rep(c("mix", "same"), each = 12000), 2),
-                 samples = c(samples_mix$BUGSoutput$sims.list$mu_alpha,
+df <- data.frame(parameter = rep(c("alpha", "rho"),
+                                 each = total_length),
+                 type = rep(rep(c("mix", "same"),
+                                each = total_length/2), 2),
+                 samples = c(samples_mix$BUGSoutput$sims.list$mu_alpha, 
                              samples_same$BUGSoutput$sims.list$mu_alpha,
                              samples_mix$BUGSoutput$sims.list$mu_rho,
                              samples_same$BUGSoutput$sims.list$mu_rho))
 
 
 pl3 <- combined_posterior_plots(df)
-ggsave("plots/combined_posterior_plots", plot = pl3, width = 6, height = 6, dpi = 300)
+ggsave("../plots/combined_posterior_plots.png", plot = pl3, width = 6, height = 6, dpi = 300)
 
 # trace plots
-png("plots/traceplot_samples_mix.png", width = 800, height = 600)
+png("../plots/traceplot_samples_mix.png", width = 800, height = 600)
 traceplot(samples_mix, mfrow = c(3,1))
 dev.off()
 
-png("plots/traceplot_samples_same.png", width = 800, height = 600)
+png("../plots/traceplot_samples_same.png", width = 800, height = 600)
 traceplot(samples_same, mfrow = c(3, 1))
 dev.off()
 
