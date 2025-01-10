@@ -1,0 +1,13 @@
+Inference for Bugs model at "CC_no_rho.txt", fit using jags,
+ 3 chains, each with 20000 iterations (first 5000 discarded)
+ n.sims = 45000 iterations saved. Running time = secs
+         mu.vect sd.vect   2.5%    25%    50%    75% 97.5%  Rhat n.eff
+mu_alpha   2.475   0.814  0.586  2.003  2.557  3.048  3.87 1.008   750
+deviance  83.588   7.431 70.478 78.283 83.051 88.396 99.31 1.002  2300
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule: pV = var(deviance)/2)
+pV = 27.6 and DIC = 111.2
+DIC is an estimate of expected predictive error (lower deviance is better).
