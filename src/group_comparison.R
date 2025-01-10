@@ -109,6 +109,9 @@ samples <- jags.parallel(data, inits = NULL, params,
 
 save(samples, file = "../jags_output/group_diff_estimation.RData")
 
+# Save the sample table as .txt by captureing the printed output
+output <- capture.output(print(samples))
+writeLines(output, con = "../jags_output/comparison_summary.txt")
 
 # Plotting!
 source("plot_functions.R")

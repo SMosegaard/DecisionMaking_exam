@@ -240,6 +240,9 @@ save(samples,
 
 ```
 
+```{r}
+pacman::p_load(haven, dplyr)
+```
 
 
 ```{r}
@@ -392,6 +395,50 @@ traceplot(samples_same, mfrow = c(3, 1))
 dev.off()
 
 ```
+
+```{r}
+samples_mix
+
+```
+
+```{r}
+# Generate the summary of the samples
+summary_mix <- summary(samples_mix)
+
+# Print the summary to the console
+print(summary_mix)
+
+# Save the summary to a text file
+write(summary_mix, file = "../jags_output/mix_estimation_summary.txt")
+
+```
+
+```{r}
+# Save the sample table as .txt by captureing the printed output
+output <- capture.output(print(samples_mix))
+writeLines(output, con = "../jags_output/mix_estimation_summary.txt")
+```
+
+
+```{r}
+output <- capture.output(print(samples_same))
+writeLines(output, con = "../jags_output/same_estimation_summary.txt")
+```
+
+
+```{r}
+summary_mix <- print(samples_mix)
+
+```
+
+
+
+```{r}
+samples_same
+             
+```
+
+
 
 
 ```{r}
@@ -676,6 +723,18 @@ traceplot(samples, mfrow = c(3, 1))
 dev.off()
 
 ```
+
+```{r}
+samples
+```
+
+
+```{r}
+# Save the sample table as .txt by captureing the printed output
+output <- capture.output(print(samples))
+writeLines(output, con = "../jags_output/comparison_summary.txt")
+```
+
 
 ```{r}
 traceplot(samples, mfrow = c(3, 1))

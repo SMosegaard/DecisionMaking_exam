@@ -102,6 +102,9 @@ samples_mix <- jags.parallel(data_mix, inits = NULL, params,
                              n.thin = 1, n.cluster = 4, jags.seed = 123)
 save(samples_mix, file = "../jags_output/mix_estimation_samples.RData")
 
+# Save the sample table as .txt by captureing the printed output
+output_mix <- capture.output(print(samples_mix))
+writeLines(output_mix, con = "../jags_output/mix_estimation_summary.txt")
 
 samples_same <- jags.parallel(data_same, inits = NULL, params,
                              model.file = "CC.txt",
@@ -109,6 +112,8 @@ samples_same <- jags.parallel(data_same, inits = NULL, params,
                              n.thin = 1, n.cluster = 4, jags.seed = 123)
 save(samples_same, file = "../jags_output/same_estimation_samples.RData")
 
+output_same <- capture.output(print(samples_same))
+writeLines(output_same, con = "../jags_output/same_estimation_summary.txt")
 
 # Plotting!
 # Posterior density plots for alpha and rho, both types
