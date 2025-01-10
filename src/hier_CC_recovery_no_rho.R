@@ -102,7 +102,7 @@ pl1 <- recov_plot(true_mu_alpha_vec, infer_mu_alpha_vec, c("true mu_alpha", "inf
 ggsave("../plots/recov_plot_mu_alpha_NO_RHO2.png", plot = pl1, width = 6, height = 6, dpi = 300)
 
 pl2 <- recov_plot(true_sigma_alpha_vec, infer_sigma_alpha_vec, c("true sigma_alpha", "inferred sigma_alpha"), 'smoothed linear fit')
-ggsave("../plots/recov_plot_sigma_alpha_NO_RHO2.png", plot = pl3, width = 6, height = 6, dpi = 300)
+ggsave("../plots/recov_plot_sigma_alpha_NO_RHO2.png", plot = pl2, width = 6, height = 6, dpi = 300)
 
 combined_plot2 <- ggarrange(pl1, pl2)
 ggsave("../plots/recov_combined_plot_alpha_NO_RHO2.png", plot = combined_plot2, width = 12, height = 6, dpi = 300)
