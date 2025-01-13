@@ -27,19 +27,19 @@ $ renv::restore()
 
 Once the environment is restored, you are ready to run the analysis. Below are the steps for different stages of the project:
 
-### Parameter recovery
+### 1. Parameter recovery
 Run the following scripts to perform parameter recovery for both models:
 ```python
 $ Rscript hier_CC_recovery.R
 $ Rscript hier_CC_recovery_no_rho.R
 ```
-### Parameter estimation
+### 2. Parameter estimation
 To perform parameter estimation for both models, use:
 ```python
 $ Rscript group_estimation.R
 $ Rscript group_estimation_no_rho.R
 ```
-### Group comparison
+### 3. Group comparison
 Finally, run these scripts to perform group comparison:
 ```python
 $ Rscript group_comparison.R
