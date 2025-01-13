@@ -46,7 +46,7 @@ $ Rscript group_comparison.R
 $ Rscript group_comparison_no_rho.R
 ```
 
-## 📂 Repo Overview
+## 📂 Repo overview
 The project structure is as follows:
 
 ```
