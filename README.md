@@ -1,4 +1,5 @@
-# DecisionMaking
+# 👩‍🎓 Decision Making Exam
+***Adapting the Conditional Cooperation Model: Evaluating its Application in One-shot Public Goods Games***
 
 This repository contains the code for my exam project in the course 'Decision making' as a part of my Master in Cognitive Science, Aarhus University.
 
